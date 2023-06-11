@@ -11,9 +11,9 @@ open import Cubical.Data.Sigma.Base
 
 Topics covered:
 
-* Types and Elements
-* (Dependent) Function Types and Function Composition
-* (Dependent) Pair Types
+- Types and Elements
+- (Dependent) Function Types and Function Composition
+- (Dependent) Pair Types
 
 A type theory is a formal system for keeping track of what type of
 thing every mathematical object is. This idea is familiar from
@@ -72,12 +72,13 @@ most fundamental concept in type theory: functions.
 
 A function `f : A → B` may be thought of in two ways:
 
-* 1: An operation which takes an element `x : A` as input and produces
+- 1: An operation which takes an element `x : A` as input and produces
   an element `f(x) : B` as output.
-* 2: An element `f(x) : B` whose definition involves a variable element
+- 2: An element `f(x) : B` whose definition involves a variable element
   `x : A`.
 
 Here is our first Agda function: the identity function of type `ℕ → ℕ`.
+
 ```
 idℕ : ℕ → ℕ
 idℕ x = x
@@ -88,6 +89,7 @@ the `=` sign, which can then be used on the right. So here, idℕ
 accepts `x` as input, and immediately produces `x` as output.
 
 Here is another way to define the identity function:
+
 ```
 idℕ' : ℕ → ℕ
 idℕ' = λ (x : ℕ) → x
@@ -112,6 +114,7 @@ single arguments that themselves return functions. This technique is
 called "currying" after the computer scientist Haskell Curry (whose
 name is also immortalized in the programming language
 Haskell). Consider the following two functions:
+
 ```
 constℕ : ℕ → ℕ → ℕ
 constℕ a b = a
@@ -124,9 +127,9 @@ These two functions are identical to Agda, but the way we have written
 them suggests the two different ways we might think of functions of
 multiple arguments:
 
-* The function `constℕ` is written as a function of two variables `a` and
+- The function `constℕ` is written as a function of two variables `a` and
   `b`, returning the first.
-* The function `constℕ'` is written as a function of a single variable `a`,
+- The function `constℕ'` is written as a function of a single variable `a`,
   returning the function `ℕ → ℕ` which takes `b : ℕ` and yields `a`.
 
 Later in this lecture, we will see another (more familiar) way to see
@@ -147,7 +150,6 @@ parentheses), here it is important that we put `(ℕ → ℕ)` in
 parentheses. This is because we are taking the function `f : ℕ → ℕ` as
 an argument to `apply`.
 
-
 The functions we have written are all specialised to only work with
 elements of the type `ℕ`. This is overly restrictive, we should have
 an identity function `A → A` that works for any type `A` at all.
@@ -158,7 +160,7 @@ idE A x = x
 ```
 
 Let's understand why the type of `id` is a bit more complicated than
-just `A → A`.  The extra bit `(A : Type) →` is there because the type
+just `A → A`. The extra bit `(A : Type) →` is there because the type
 `A → A` itself involves a variable: `A` itself. For this reason, we
 must say that `A` is a type, which we do by writing `A : Type`. This
 `A` is then an additional argument to the function, so it also appears
@@ -169,6 +171,7 @@ which is a type. When applied, `id A` gives back the identity function
 `A → A` for that type.
 
 `const` and `apply` can be similarly generalised:
+
 ```
 constE : (A : Type) → (B : Type) → A → B → A
 constE A B a b = a
@@ -187,6 +190,7 @@ what `A` had to be.
 Agda lets us make these arguments implicit, so they are reconstructed
 from the other arguments. This is done by surrounding them with curly
 braces rather than parentheses:
+
 ```
 id : {A : Type} → A → A
 id x = x
@@ -197,19 +201,21 @@ const a b = a
 apply : {A : Type} → {B : Type} → (A → B) → A → B
 apply f a = f a
 ```
+
 This saves a huge amount of typing in the long run. Agda will complain
 if it cannot reconstruct an implicit argument given the other
 arguments you have provided.
 
 We can compose functions by applying the second to the result of the
 first. Try implementing it:
+
 ```
 compose : {A : Type} {B : Type} {C : Type}
     → (B → C)
     → (A → B)
     → (A → C)
 -- Exercise:
-compose g f = {!!}
+compose g f = λ a → g (f a)
 ```
 
 Agda considers definitions with underscores specially, and lets us
@@ -226,7 +232,7 @@ flip : {A B C : Type}
      → (A → B → C)
      → (B → A → C)
 -- Exercise:
-flip = {!!}
+flip g = λ a b → g b a
 
 -- Should use the provided function on the argument twice.
 apply-twice : {A : Type}
@@ -234,13 +240,13 @@ apply-twice : {A : Type}
      → A
      → A
 -- Exercise:
-apply-twice = {!!}
+apply-twice g a = g (g a)
 ```
 
-* Pen and paper exercise: Check that `f ∘ id` and `id ∘ f` act the
- same as `f` on any argument. In Part 2 of this course, we'll be able
- to express that fact in theory and have Agda verify that it is
- correct!
+- Pen and paper exercise: Check that `f ∘ id` and `id ∘ f` act the
+  same as `f` on any argument. In Part 2 of this course, we'll be able
+  to express that fact in theory and have Agda verify that it is
+  correct!
 
 ## Dependent types and dependent functions
 
@@ -268,6 +274,7 @@ an element of the corresponding type. If `A` has exactly two elements
 product of `B 0` and `B 1`.
 
 mvrnote: this is confusing I think
+
 ```
 Π : (A : Type) → (B : A → Type) → Type
 Π A B = (x : A) → B x
@@ -284,10 +291,12 @@ id-family A = A → A
 ```
 
 Here is the full dependent composition.
+
 ```
 _∘_ : ∀ {A : Type} {B : A → Type} {C : (x : A) → B x → Type} (g : {a : A} → (b : B a) → C a b) → (f : (a : A) → B a) → (a : A) → C a (f a)
 g ∘ f = λ x → g (f x)
 ```
+
 ## Pair types
 
 The other basic type forming operation we have is the type of pairs,
@@ -351,13 +360,13 @@ curry3 : {A B C D : Type}
   → (((A × B) × C) → D)
   → (A → B → C → D)
 -- Exercise:
-curry3 f = {!!}
+curry3 f x y z = f ((x , y) , z)
 
 uncurry3 : {A B C D : Type}
   → (A → B → C → D)
   → (((A × B) × C) → D)
 -- Exercise:
-uncurry3 f = {!!}
+uncurry3 f p = f (fst (fst p)) (snd (fst p)) (snd p)
 ```
 
 Just as type theory generalises function types to dependent function
@@ -393,13 +402,13 @@ uncurry : {A : Type} → {B : A → Type} → {C : (x : A) → B x → Type}
   → ((x : A) → (y : B x) → C x y)
   → (p : Σ[ x ∈ A ] B x) → C (fst p) (snd p)
 -- Exercise
-uncurry f p = {!!}
+uncurry f p = f (fst p) (snd p)
 
 curry : {A : Type} → {B : A → Type} → {C : (x : A) → B x → Type}
   → ((p : Σ[ x ∈ A ] B x) → C (fst p) (snd p))
   → (x : A) → (y : B x) → C x y
 -- Exercise
-curry f x y = {!!}
+curry f x y = f (x , y)
 ```
 
 Finally in this section, we have the "universal mapping property" of
@@ -412,7 +421,7 @@ functions `C → A` and `C → B`.
       → (C → B)
       → (C → A × B)
 -- Exercise:
-×-ump = {!!}
+×-ump f g c = (f c , g c)
 ```
 
 We will have a lot to say about universal properties in this course.
@@ -431,8 +440,10 @@ built in function that increments a level by one.
 
 All our above functions involving types can be further generalised to
 work for types in any universe level.
+
 ```
 idℓ : ∀ {ℓ} {A : Type ℓ} → A → A
 idℓ x = x
 ```
+
 But we won't need to make use of this for a while.

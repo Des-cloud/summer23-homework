@@ -1,4 +1,5 @@
 # Homework 1-2: Inductive Types
+
 ```
 module homework.1--Type-Theory.1-2--Inductive-Types where
 
@@ -6,13 +7,15 @@ open import Cubical.Foundations.Prelude
 open import homework.1--Type-Theory.1-1--Types-and-Functions
 
 ```
+
 Topics Covered:
-* Booleans
-* The Empty and Unit types
-* Natural numbers
-* Lists
-* Coproducts
-* Integers
+
+- Booleans
+- The Empty and Unit types
+- Natural numbers
+- Lists
+- Coproducts
+- Integers
 
 In the last lecture, we saw some abstract type theory. In this
 lecture, we'll get to define our own concrete data types.
@@ -20,6 +23,7 @@ lecture, we'll get to define our own concrete data types.
 A data type, also known as an inductive type, is a type whose elements
 are built up out of "constructors". Here is the data type of Boolean
 values:
+
 ```
 data Bool : Type where
   true  : Bool
@@ -35,6 +39,7 @@ define a function out of an inductive type, it suffices to define the
 behavior of the function on all the constructors. For example, we may
 define the logical `not` by saying what it does to `true` and to
 `false`:
+
 ```
 not : Bool → Bool
 not true = false
@@ -64,15 +69,20 @@ and `y` are `true`.
 ```
 _and_ : Bool → Bool → Bool
 -- Exercise:
-x and y = {!!}
+true and true = true
+true and false = false
+false and true = false
+false and false = false
 ```
 
 You don't have to split on all variables at once. Give a definition of
 the logical "or" by case splitting only on the variable `x`:
+
 ```
 _or_ : Bool → Bool → Bool
 -- Exercise:
-x or y = {!!}
+true or y = true
+false or y = y
 ```
 
 Here is the definition of logical implication. There is a strange
@@ -113,6 +123,7 @@ Bool-rec a1 a2 false = a2
 The recursion principle for Booleans is known under a more common
 name: the "if-then-else" pattern familiar in many programming
 languages:
+
 ```
 if_then_else_ : ∀ {ℓ} {A : Type ℓ}
               → Bool
@@ -141,6 +152,7 @@ be the image of the single element `tt : ⊤`).
 
 We can go even further, however. We can define a data type `∅` with no
 constructors. This is called the "empty type":
+
 ```
 data ∅ : Type₀ where
 ```
@@ -164,6 +176,7 @@ type. We have a constructor `zero : ℕ`, saying that zero is a natural
 number, and a constructor `suc : (n : ℕ) → ℕ` which says that if `n`
 is already a natural number, then `suc n` (the "successor" of `n`, or
 `n + 1`) is a natural number.
+
 ```
 data ℕ : Type₀ where
   zero : ℕ
@@ -172,6 +185,7 @@ data ℕ : Type₀ where
 
 The recursion principle for the natural numbers is the usual
 definition of a function by recursion:
+
 ```
 ℕ-rec : ∀ {ℓ} {A : Type ℓ}
       → (a₀ : A)                 -- The base case
@@ -183,6 +197,7 @@ definition of a function by recursion:
 
 Using pattern matching, we can define the arithmetic operations on
 numbers:
+
 ```
 _+_ : ℕ → ℕ → ℕ
 zero    + m = m
@@ -190,10 +205,11 @@ zero    + m = m
 
 _·_ : ℕ → ℕ → ℕ
 -- Exercise:
-n · m = {!!}
+n · m = m
 ```
 
 We can also define a "predecessor" operation, which partially undoes the successor suc : ℕ → ℕ. Of course, it can't fully undo it, since 0 has nowhere to go but to itself.
+
 ```
 predℕ : ℕ → ℕ
 predℕ zero = zero
@@ -220,13 +236,15 @@ _++_ : {A : Type} → List A → List A → List A
 ```
 
 We can define the length of a list by recursion
+
 ```
 length : {A : Type} → List A → ℕ
 -- Exercise:
-length L = {!!}
+length L = zero
 ```
 
 A natural number can be seen as a list of tally marks.
+
 ```
 ℕ→List⊤ : ℕ → List ⊤
 -- Exercise:
@@ -241,6 +259,7 @@ them in Part 2 of this course.
 Next, let's define the disjoint union of two types. An element of the
 disjoint union `A ⊎ B` should either be an element of `A` or an element
 of `B`. We can turn this into the definition of an inductive type.
+
 ```
 data _⊎_ {ℓ ℓ' : _} (A : Type ℓ) (B : Type ℓ') : Type (ℓ-max ℓ ℓ') where
   inl : (a : A) → A ⊎ B
@@ -266,6 +285,7 @@ Since a `Bool` is either `true` or `false`, we should be able to see
 `Bool` and the disjoint union of the set `{true}` (represented by `⊤`)
 and `{false}` (represented by another copy of `⊤`). We can construct
 maps to that effect:
+
 ```
 Bool→⊤⊎⊤ : Bool → ⊤ ⊎ ⊤
 -- Exercise:
@@ -284,6 +304,7 @@ and `⊤ ⊎ ⊤`.
 There is a sense in which ⊎ acts like an addition of types, and ∅ acts
 like zero. This addition of types satisfies the expected laws up
 to equivalence, but again we can't yet fully express that.
+
 ```
 ∅⊎-to : ∀ {ℓ} (A : Type ℓ) → ∅ ⊎ A → A
 -- Exercise:
@@ -297,6 +318,7 @@ to equivalence, but again we can't yet fully express that.
 Now we can describe the integers. An integer is either a natural
 number or a strictly negative number, so we can turn this into an
 inductive definition:
+
 ```
 data ℤ : Type₀ where
   pos    : (n : ℕ) → ℤ
@@ -306,6 +328,7 @@ data ℤ : Type₀ where
 It's worth noting that the integers are the disjoint union of two
 copies of the natural numbers (with one copy shifted up by one and
 then negated):
+
 ```
 ℤ→ℕ⊎ℕ : ℤ → ℕ ⊎ ℕ
 -- Exercise:
@@ -320,6 +343,7 @@ then negated):
 We can define the various arithmetic operations of the
 integers. First, we need a few helper functions. This one negates a
 natural number into an integer (without shifting it first):
+
 ```
 neg : ℕ → ℤ
 neg zero = pos zero
@@ -328,6 +352,7 @@ neg (suc n) = negsuc n
 
 Now we can define the successor of integers which sends `z` to `z +
 1`, and the predecessor function which sends `z` to `z - 1`. This time, we can send zero to -1.
+
 ```
 sucℤ : ℤ → ℤ
 -- Exercise:
@@ -371,6 +396,7 @@ m - n = m +ℤ (- n)
 
 See if you can come up with the correct definition for multiplication
 of integers.
+
 ```
 _·ℤ_ : ℤ → ℤ → ℤ
 -- Exercise:
@@ -389,3 +415,4 @@ infix  8 -_
 infixl 7 _·_ _·ℤ_
 infixl 6 _+_ _+ℤ_ _-_
 ```
+ 

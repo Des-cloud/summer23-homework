@@ -176,8 +176,33 @@ which is a type. When applied, `id A` gives back the identity function
 constE : (A : Type) → (B : Type) → A → B → A
 constE A B a b = a
 
+-- The function constE : (A : Type) → (B : Type) → A → B → A takes four arguments: A, B, x, and y. 
+-- It specifies that A and B are type parameters, x is a value of type A, and y is a value of type B. 
+-- The function returns x, which means it discards the second argument y and always returns the first argument x.
+
+-- def constE(A, B, x, y):
+--    return x
+
+-- result = constE(int, str, 5, "Hello")
+-- print(result)  # Output: 5
+```
+
+```
 applyE : (A : Type) → (B : Type) → (A → B) → A → B
 applyE A B f a = f a
+
+-- The function applyE : (A : Type) → (B : Type) → (A → B) → A → B takes four arguments: A, B, f, and x. 
+-- It specifies that A and B are type parameters, f is a function that takes an argument of type A and returns a value of type B, and x is a value of type A. 
+-- The function applies the function f to the value x and returns the result.
+
+-- def applyE(A, B, f, x):
+--    return f(x)
+-- def addOne(x):
+--    return x + 1
+
+-- result = applyE(int, int, addOne, 5)
+-- print(result)  # Output: 6
+
 ```
 
 There is one more trick before we reach the definition of `id`,
@@ -215,7 +240,20 @@ compose : {A : Type} {B : Type} {C : Type}
     → (A → B)
     → (A → C)
 -- Exercise:
-compose g f = λ a → g (f a)
+-- Takes 5 arguments, A, B and C are types and can be omitted, f and g are functions
+-- However g takes an argument x of type A so it has to be provided. Total 6 arguments.
+-- f takes an argument y of type B, but it is not provided, because it is the result of g(x)
+-- So the total number of arguments is 5.
+
+-- compose f g a = f (g a)
+compose f g = λ a → f (g a)
+
+-- def compose(f, g):
+--     def composed_function(a):
+--         b = g(a)
+--         c = f(b)
+--         return c
+--     return composed_function
 ```
 
 Agda considers definitions with underscores specially, and lets us
@@ -232,15 +270,52 @@ flip : {A B C : Type}
      → (A → B → C)
      → (B → A → C)
 -- Exercise:
-flip g = λ a b → g b a
+-- Takes 4 arguments, A, B and C are types and can be omitted, f is a function
+-- f takes two arguments x and y of type A and B respectively, but they are not provided
+-- So the total number of arguments is 4.
+-- Function returns a function that takes two arguments y and x of type B and A respectively
 
+flip f = λ a b → f b a  
+
+-- def flip(f):
+--     def flipped_function(b, a):
+--         c = f(a, b)
+--         return c
+--     return flipped_function
+
+-- def subtract(x, y):
+--     return x - y
+
+-- # Create a new function by flipping the arguments of subtract
+-- flipped_subtract = flip(subtract)
+
+-- result = flipped_subtract(5, 3)
+-- print(result)  # Output: -2 (3 - 5)
+```
+
+```
 -- Should use the provided function on the argument twice.
 apply-twice : {A : Type}
      → (A → A)
      → A
      → A
 -- Exercise:
-apply-twice g a = g (g a)
+-- Takes a function f and an argument a of type A
+-- returns an x of type A
+
+apply-twice f = λ a → f (f a)
+
+-- def apply_twice(f, a):
+--     b = f(a)
+--     c = f(b)
+--     return c
+
+-- def square(x):
+--     return x * x
+
+-- result = apply_twice(square, 3)
+-- print(result)  # Output: 81 (square(square(3)))
+
 ```
 
 - Pen and paper exercise: Check that `f ∘ id` and `id ∘ f` act the
@@ -278,6 +353,20 @@ mvrnote: this is confusing I think
 ```
 Π : (A : Type) → (B : A → Type) → Type
 Π A B = (x : A) → B x
+
+-- def dependent_function(A, B):
+--     # Here, A represents a type and B represents a type family
+--     # where B is a function that maps elements of A to types.
+
+--     def f(a):
+--         # This is the dependent function that takes an element `a` of type `A`
+--         # and returns an element of type `B a`, which depends on the specific `a`.
+--         # You can customize the implementation based on your specific use case.
+--         # For simplicity, let's assume B is a dictionary that maps elements of A to values.
+--         return B[a]
+
+--     return f
+
 ```
 
 Note that most of the functions in this file have already been
@@ -307,6 +396,9 @@ necessary, or Agda thinks you are referring to a variable called `a,`.
 ```
 pair× : {A : Type} → {B : Type} → A → B → (A × B)
 pair× a b = (a , b)
+
+-- def pair(a, b):
+--     return (a, b)
 ```
 
 To use a pair, we can "project out" the first and second components
@@ -316,8 +408,14 @@ using the in-built funtions `fst` and `snd`.
 my-fst× : {A : Type} → {B : Type} → (A × B) → A
 my-fst× p = fst p
 
+-- def my_fst(p):
+--     return p[0]
+
 my-snd× : {A : Type} → {B : Type} → (A × B) → B
 my-snd× p = snd p
+
+-- def my_snd(p):
+--     return p[1]
 ```
 
 These can be chained together to work with nested pairs.
@@ -326,14 +424,26 @@ These can be chained together to work with nested pairs.
 triple× : {A B C : Type} → A → B → C → ((A × B) × C)
 triple× a b c = ((a , b) , c)
 
+-- def triple(a, b, c):
+--     return ((a, b), c)
+
 my-fst×× : {A B C : Type} → ((A × B) × C) → A
 my-fst×× t = fst (fst t)
+
+-- def my_fst(p):
+--     return p[0][0]
 
 my-snd×× : {A B C : Type} → ((A × B) × C) → B
 my-snd×× t = snd (fst t)
 
+-- def my_snd(p):
+--     return p[0][1]
+
 my-trd×× : {A B C : Type} → ((A × B) × C) → C
 my-trd×× t = snd t
+
+-- def my_trd(p):
+--     return p[1]
 ```
 
 With pair types we can make precise the currying and uncurrying idea
@@ -344,7 +454,14 @@ pair, to a function that returns a function, and vice versa.
 curry× : {A B C : Type}
   → ((A × B) → C)
   → (A → (B → C))
-curry× f x y = f (x , y)
+curry× f a b = f (a , b)
+
+-- def curry(f):
+--     def g(a):
+--         def h(b):
+--             return f((a, b))
+--         return h
+--     return g
 
 uncurry× : {A B C : Type}
   → (A → (B → C))
@@ -360,7 +477,7 @@ curry3 : {A B C D : Type}
   → (((A × B) × C) → D)
   → (A → B → C → D)
 -- Exercise:
-curry3 f x y z = f ((x , y) , z)
+curry3 f a b c = f ((a , b) , c)
 
 uncurry3 : {A B C D : Type}
   → (A → B → C → D)

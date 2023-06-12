@@ -85,6 +85,8 @@ true or y = true
 false or y = y
 ```
 
+With underscores in names, you can put the arguments around the _
+
 Here is the definition of logical implication. There is a strange
 feature of this definition which has a fancy Latin name: "ex falso
 quodlibet" --- false implies anything. Over the course of this and the
@@ -130,7 +132,9 @@ if_then_else_ : ∀ {ℓ} {A : Type ℓ}
               → A
               → A
               → A
-if b then a1 else a2 = Bool-rec a1 a2 b
+-- if b then a1 else a2 = Bool-rec a1 a2 b
+if true then a1 else a2 = a1
+if false then a1 else a2 = a2
 ```
 
 Bool is a pretty simple data type, but it isn't the simplest. We can
@@ -143,7 +147,8 @@ data ⊤ : Type₀ where
 
 ⊤-rec : ∀ {ℓ} {A : Type ℓ} (a : A)
       → (⊤ → A)
-⊤-rec a tt = a
+-- ⊤-rec a tt = a
+⊤-rec a = λ tt → a
 ```
 
 The recursion principle for the unit type `⊤` says that to define a
@@ -193,6 +198,8 @@ definition of a function by recursion:
       → (ℕ → A)
 ℕ-rec a₀ recurse zero = a₀
 ℕ-rec a₀ recurse (suc n) = recurse n (ℕ-rec a₀ recurse n)
+
+-- Deosn't make sense 
 ```
 
 Using pattern matching, we can define the arithmetic operations on

@@ -205,7 +205,8 @@ zero    + m = m
 
 _·_ : ℕ → ℕ → ℕ
 -- Exercise:
-n · m = m
+zero    · m = zero
+(suc n) · m = m + (n · m)
 ```
 
 We can also define a "predecessor" operation, which partially undoes the successor suc : ℕ → ℕ. Of course, it can't fully undo it, since 0 has nowhere to go but to itself.
@@ -240,7 +241,8 @@ We can define the length of a list by recursion
 ```
 length : {A : Type} → List A → ℕ
 -- Exercise:
-length L = zero
+length [] = zero
+length (x :: L) = suc (length L)
 ```
 
 A natural number can be seen as a list of tally marks.
@@ -248,7 +250,8 @@ A natural number can be seen as a list of tally marks.
 ```
 ℕ→List⊤ : ℕ → List ⊤
 -- Exercise:
-ℕ→List⊤ n = {!!}
+ℕ→List⊤ zero = []
+ℕ→List⊤ (suc n) = tt :: ℕ→List⊤ n
 ```
 
 Together with `length : List ⊤ → ℕ`, we have a bijection between the
@@ -289,11 +292,13 @@ maps to that effect:
 ```
 Bool→⊤⊎⊤ : Bool → ⊤ ⊎ ⊤
 -- Exercise:
-Bool→⊤⊎⊤ b = {!!}
+Bool→⊤⊎⊤ true = inl tt
+Bool→⊤⊎⊤ false = inr tt
 
 ⊤⊎⊤→Bool : ⊤ ⊎ ⊤ → Bool
 -- Exercise:
-⊤⊎⊤→Bool c = {!!}
+⊤⊎⊤→Bool (inl _) = true
+⊤⊎⊤→Bool (inr _) = false
 ```
 
 Clearly, if you turned a `Bool` into an element of `⊤ ⊎ ⊤` and then
@@ -308,11 +313,12 @@ to equivalence, but again we can't yet fully express that.
 ```
 ∅⊎-to : ∀ {ℓ} (A : Type ℓ) → ∅ ⊎ A → A
 -- Exercise:
-∅⊎-to A x = {!!}
+∅⊎-to A (inl ())
+∅⊎-to A (inr a) = a
 
 ∅⊎-fro : ∀ {ℓ} (A : Type ℓ) → A → ∅ ⊎ A
 -- Exercise:
-∅⊎-fro A a = {!!}
+∅⊎-fro A a = inr a 
 ```
 
 Now we can describe the integers. An integer is either a natural
@@ -332,12 +338,14 @@ then negated):
 ```
 ℤ→ℕ⊎ℕ : ℤ → ℕ ⊎ ℕ
 -- Exercise:
-ℤ→ℕ⊎ℕ z = {!!}
+ℤ→ℕ⊎ℕ (pos n) = inl n
+ℤ→ℕ⊎ℕ (negsuc n) = inr n
 
 
 ℕ⊎ℕ→ℤ : ℕ ⊎ ℕ → ℤ
 -- Exercise:
-ℕ⊎ℕ→ℤ z = {!!}
+ℕ⊎ℕ→ℤ (inl a) = pos a
+ℕ⊎ℕ→ℤ (inr b) = negsuc b
 ```
 
 We can define the various arithmetic operations of the
@@ -356,11 +364,15 @@ Now we can define the successor of integers which sends `z` to `z +
 ```
 sucℤ : ℤ → ℤ
 -- Exercise:
-sucℤ z = {!!}
+sucℤ (pos n) = pos (suc n)
+sucℤ (negsuc zero) = pos zero
+sucℤ (negsuc (suc n)) = negsuc n
 
 predℤ : ℤ → ℤ
 -- Exercise:
-predℤ z = {!!}
+predℤ (pos zero) = negsuc zero
+predℤ (pos (suc n)) = pos n
+predℤ (negsuc n) = negsuc (suc n)
 ```
 
 Now we turn our attention to defining addition of integers. Since the
@@ -371,24 +383,28 @@ these cases out.
 ```
 _+pos_ : ℤ → ℕ → ℤ
 -- Exercise:
-z +pos n = {!!}
+z +pos zero = z
+z +pos (suc n) = sucℤ (z +pos n)
 
 _+negsuc_ : ℤ → ℕ → ℤ
 -- Exercise:
-z +negsuc n = {!!}
+z +negsuc zero = predℤ z
+z +negsuc (suc n) = predℤ (z +negsuc n)
 
 _+ℤ_ : ℤ → ℤ → ℤ
 m +ℤ pos n = m +pos n
 m +ℤ negsuc n = m +negsuc n
 ```
 
-We can negate an integer, and define the subtraction of integers in
-terms of addition and negation.
+We can negate an integer, and define the subtraction of integers 
+in terms of addition and negation.
 
 ```
 -_ : ℤ → ℤ
 -- Exercise:
-- z = {!!}
+- pos zero = pos zero
+- pos (suc n) = negsuc n
+- negsuc n = pos (suc n)
 
 _-_ : ℤ → ℤ → ℤ
 m - n = m +ℤ (- n)
@@ -400,8 +416,12 @@ of integers.
 ```
 _·ℤ_ : ℤ → ℤ → ℤ
 -- Exercise:
-n ·ℤ m = {!!}
+pos zero ·ℤ m = pos zero
+pos (suc n) ·ℤ m = m +ℤ (pos n ·ℤ m)
+negsuc zero ·ℤ m = - m
+negsuc (suc n) ·ℤ m = - m +ℤ (negsuc n ·ℤ m)
 ```
+
 
 # Extra:
 
@@ -415,4 +435,3 @@ infix  8 -_
 infixl 7 _·_ _·ℤ_
 infixl 6 _+_ _+ℤ_ _-_
 ```
- 

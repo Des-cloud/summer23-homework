@@ -57,10 +57,10 @@ principle for paths:
 -- To see what the expression evaluates to,
 -- uncomment this block and move the cursor into the goal
 -- and press `C-c C-n`. (`C-n` for "normalise").
-{-
-_ : I
-_ = {! ~ i0!}
--}
+-- {-
+-- _ : I
+-- _ = {! ~ i0!}
+-- -}
 
 sym : x ≡ y → y ≡ x
 sym p i = p (~ i)
@@ -167,14 +167,14 @@ module _ {A : Type ℓ} {B : A → Type ℓ'}
   where
 
   -- Exercise:
-  ΣPathP' : Σ[ p ∈ (fst x ≡ fst y) ] PathP {!!} {!!} {!!}
+  ΣPathP' : Σ[ p ∈ (fst x ≡ fst y) ] PathP (λ i → B (p i)) (snd x) (snd y)
           → x ≡ y
   ΣPathP' eq i = fst eq i , snd eq i
 
   -- Exercise:
   PathPΣ' : x ≡ y
-          → Σ[ p ∈ (fst x ≡ fst y) ] PathP {!!} {!!} {!!}
-  PathPΣ' eq = (λ i → fst (eq i)) , (λ i → snd (eq i))
+          → Σ[ p ∈ (fst x ≡ fst y) ] PathP (λ i → B ((p i))) (snd x) (snd y)
+  PathPΣ' eq = (cong fst eq) , (λ i → snd (eq i))
 
 ```
 
@@ -188,13 +188,13 @@ module _ {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ'}
   where
 
   -- Exercise:
-  ΣPathP : Σ[ p ∈ PathP {!!} {!!} {!!} ] PathP {!!} {!!} {!!}
-         → PathP (λ i → Σ (A i) (B i)) x y
+  ΣPathP : Σ[ p ∈ PathP (λ i → A i) (fst x) (fst y) ] PathP (λ i → B i (p i)) (snd x) (snd y)
+        → PathP (λ i → Σ (A i) (B i)) x y
   ΣPathP eq i = fst eq i , snd eq i
 
   -- Exercise:
   PathPΣ : PathP (λ i → Σ (A i) (B i)) x y
-         → Σ[ p ∈ PathP {!!} {!!} {!!} ] PathP {!!} {!!} {!!}
+        → Σ[ p ∈ PathP (λ i → A i) (fst x) (fst y) ] PathP (λ i → B i (p i)) (snd x) (snd y)
   PathPΣ eq = (λ i → fst (eq i)) , (λ i → snd (eq i))
 ```
 
@@ -206,8 +206,8 @@ identical but the type improves:
 -- Exercise:
 depFunExt : {B : A → I → Type}
   {f : (x : A) → B x i0} {g : (x : A) → B x i1}
-  → ((x : A) → PathP {!!} {!!} {!!})
-  → PathP {!!} f g
+  → ((x : A) → PathP (λ i → B x i) (f x) (g x))
+  → PathP (λ i → (x : A) → B x i) f g
 depFunExt p i x = p x i
 ```
 
@@ -250,16 +250,16 @@ definitionally.
 
 ```
 -- Uncomment this block and try normalising the following expressions.
-{-
-_ : I
-_ = {! i0 ∨ i0!}
-_ : I
-_ = {! i0 ∨ i1!}
-_ : I
-_ = {! i0 ∧ i0!}
-_ : I
-_ = {! i0 ∧ i1!}
--}
+-- {-
+-- _ : I
+-- _ = {! i0 ∨ i0!}
+-- _ : I
+-- _ = {! i0 ∨ i1!}
+-- _ : I
+-- _ = {! i0 ∧ i0!}
+-- _ : I
+-- _ = {! i0 ∧ i1!}
+-- -}
 ```
 
 There are a few additional equalities which hold for `max` and `min`
@@ -336,19 +336,19 @@ below.
 ```
 connectionEx1 : (p : x ≡ y) → Square p refl refl (sym p)
 -- Exercise
-connectionEx1 p i j = {!!}
-```
-            p
-        y - - - > y
-        ^         ^
-    p⁻¹ |         | refl            ^
-        |         |               j |
-        y — — — > x                 ∙ — >
-           refl                       i
-```
+connectionEx1 p i j = p (j ∧ ~ i)
+-- ```
+--             p
+--         y - - - > y
+--         ^         ^
+--     p⁻¹ |         | refl            ^
+--         |         |               j |
+--         y — — — > x                 ∙ — >
+--            refl                       i
+-- ```
 connectionEx2 : (p : x ≡ y) → Square (sym p) refl refl p
 -- Exercise
-connectionEx2 p i j = {!!}
+connectionEx2 p i j = p (i ∨ (~ j))
 ```
 
 Our definition of ℤ is a little janky and off kilter --- we treat the
@@ -370,21 +370,29 @@ isomorphic to the ones we had before.
 ```
 ℤ'→ℤ : ℤ' → ℤ
 -- Exercise
-ℤ'→ℤ z = {!!}
+ℤ'→ℤ (pos' x) = pos x
+ℤ'→ℤ (neg' zero) = pos zero
+ℤ'→ℤ (neg' (suc x)) = negsuc x
+ℤ'→ℤ (poszero≡negzero i) = pos zero
 
 ℤ→ℤ' : ℤ → ℤ'
 -- Exercise
-ℤ→ℤ' z = {!!}
+ℤ→ℤ' (pos n) = pos' n
+ℤ→ℤ' (negsuc n) = neg' (suc n)
 
 ℤIsoℤ' : Iso ℤ ℤ'
 -- Exercise
 ℤIsoℤ' = iso ℤ→ℤ' ℤ'→ℤ s r
   where
     s : section ℤ→ℤ' ℤ'→ℤ
-    s z = {!!}
+    s (pos' x) = refl
+    s (neg' zero) = poszero≡negzero
+    s (neg' (suc x)) = refl
+    s (poszero≡negzero i) j = poszero≡negzero (i ∧ j)
 
     r : retract ℤ→ℤ' ℤ'→ℤ
-    r z = {!!}
+    r (pos n) = refl
+    r (negsuc n) = refl
 ```
 
 
@@ -445,17 +453,25 @@ iff→Iso p s r = iso (fst p) (snd p) s r
 ≡Iso≡Bool a b = iff→Iso (≡iff≡Bool a b) (s a b) (r a b)
   where
     s : (x y : Bool) → section (fst (≡iff≡Bool x y)) (snd (≡iff≡Bool x y))
-    s p = {!!}
+    s true true tt = refl
+    s false false tt = refl
 
     r : (x y : Bool) → retract (fst (≡iff≡Bool x y)) (snd (≡iff≡Bool x y))
-    r true y p =  J motive refl p
+    r true y p =  J motive base-case p
       where
         motive : ∀ z q → Type
-        motive z q = {!!}
-    r false y p = J motive refl p
+        motive z q = snd (≡iff≡Bool true z) (fst (≡iff≡Bool true z) q) ≡ q
+    
+        base-case : motive true refl
+        base-case = refl
+
+    r false y p = J motive base-case p
       where
         motive : ∀ z q → Type
-        motive z q = {!!}
+        motive z q = snd (≡iff≡Bool false z) (fst (≡iff≡Bool false z) q) ≡ q
+
+        base-case : motive false refl
+        base-case = refl 
 ```
 
 We similarly promote `≡iff≡ℕ` to an isomorphism, but it will be easier
@@ -496,7 +512,8 @@ then it should be easy to map out of it.
 ```
 -- Exercise:
 decodeℕ : (n m : ℕ) → codeℕ n m → n ≡ m
-decodeℕ n m c = {!!}
+decodeℕ zero zero c = refl
+decodeℕ (suc n) (suc m) c = cong suc (decodeℕ n m c)
 ```
 
 Then we prove that `encode` and `decode` form an isomorphism. This
@@ -514,10 +531,14 @@ case.
 ≡Iso≡ℕ n m = iso (encodeℕ n m) (decodeℕ n m) (s n m) (r n m)
   where
     s : (x y : ℕ) → section (encodeℕ x y) (decodeℕ x y)
-    s x y p = {!!}
+    s zero zero tt = refl
+    s (suc x) (suc y) p = s x y p
 
     r : (x y : ℕ) → retract (encodeℕ x y) (decodeℕ x y)
-    r x y p = {!!}
+    r zero zero p = {! refl !}
+    r zero (suc y) p = {! decodeℕ zero (suc y) (encodeℕ zero (suc y) p)  !}
+    r (suc x) zero p = {!   !}
+    r (suc x) (suc y) p = {!   !}
 ```
 
 Let's do the encode-decode method again, but for coproducts.
@@ -539,8 +560,8 @@ Let's do the encode-decode method again, but for coproducts.
     decode : (x y : A ⊎ B) → x ≡⊎ y → x ≡ y
     decode x y p = {!!}
 
-    decodeRefl : (c : A ⊎ B) → decode c c (codeRefl c) ≡ refl
-    decodeRefl c p = {!!}
+    -- decodeRefl : (c : A ⊎ B) → decode c c (codeRefl c) ≡ refl
+    -- decodeRefl c p = {!!}
 
     s : (x y : A ⊎ B) → section (encode x y) (decode x y)
     s x y = {!!}
@@ -548,3 +569,4 @@ Let's do the encode-decode method again, but for coproducts.
     r : (x y : A ⊎ B) → retract (encode x y) (decode x y)
     r x y = {!!}
 ```
+    

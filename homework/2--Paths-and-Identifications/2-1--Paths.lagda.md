@@ -591,6 +591,18 @@ inr b1 ≡⊎ inr b2 = b1 ≡ b2
 ≡iff≡⊎ : {A B : Type} (x y : A ⊎ B) → (x ≡ y) iffP (x ≡⊎ y)
 -- x=y -> x≡⊎y
 -- x≡⊎y -> x=y
-≡iff≡⊎ x y = {!   !} 
+≡iff≡⊎ x y = (to x y) , (fro x y)
+  where 
+    to : (x y : A ⊎ B) → (x ≡ y) → (x ≡⊎ y)
+    to (inl a) (inl a1) p = subst (λ t → inl a ≡⊎ t) p refl
+    to (inl a) (inr b) p = subst (λ t → inl a ≡⊎ t) p refl
+    to (inr b) (inl a) p = subst (λ t → inr b ≡⊎ t) p refl
+    to (inr b) (inr b1) p = subst (λ t → inr b ≡⊎ t) p refl
+
+    fro : (x y : A ⊎ B) → (x ≡⊎ y) → (x ≡ y)
+    fro (inl a) (inl a1) p = cong inl p
+    fro (inl a) (inr b) = ∅-rec
+    fro (inr b) (inl a) = ∅-rec
+    fro (inr b) (inr b1) p = cong inr p
 
 ```

@@ -307,7 +307,7 @@ build some more squares:
             refl                       i
 ```
 connection∧ : (p : x ≡ y) → Square refl p refl p
-connection∧ p i j = p (i ∧ j)
+connection∧ p i j = p ( i ∧ j)
 ```
 
           refl
@@ -318,6 +318,8 @@ connection∧ p i j = p (i ∧ j)
        x — — — > y                 ∙ — >
            p                         i
 ```
+-- Square a0- a1- a-0 a-1 = PathP (a-0≡a-1 a-0 a-1) a0- a1-
+
 connection∨ : (p : x ≡ y) → Square p refl p refl
 connection∨ p i j = p (i ∨ j)
 ```
@@ -326,7 +328,7 @@ Below we have drawn some more squares. Write them down in Cubical Agda
 below.
 
            p⁻¹
-       x - - - > x
+       y - - - > x
        ^         ^
      p |         | refl            ^
        |         |               j |
@@ -336,17 +338,25 @@ below.
 ```
 connectionEx1 : (p : x ≡ y) → Square p refl refl (sym p)
 -- Exercise
-connectionEx1 p i j = p (j ∧ ~ i)
+connectionEx1 p i j = p (j ∧ (~ i) )
 -- ```
 --             p
---         y - - - > y
+--         x - - - > y
 --         ^         ^
 --     p⁻¹ |         | refl            ^
 --         |         |               j |
---         y — — — > x                 ∙ — >
+--         y — — — > y                 ∙ — >
 --            refl                       i
 -- ```
 connectionEx2 : (p : x ≡ y) → Square (sym p) refl refl p
+
+{-
+———— Boundary ——————————————————————————————————————————————
+i = i0 ⊢ p (~ j)
+i = i1 ⊢ y
+j = i0 ⊢ y
+j = i1 ⊢ p i
+-}
 -- Exercise
 connectionEx2 p i j = p (i ∨ (~ j))
 ```
@@ -403,9 +413,9 @@ fundamental but not so well known principle of identity: Martin Löf's
 J rule.
 
 ```
-J : (P : ∀ y → x ≡ y → Type ℓ) (r : P x refl)
-    (p : x ≡ y) → P y p
-J P r p = transport (λ i → P (p i) (λ j → p (i ∧ j))) r
+J : (motive : ∀ y → x ≡ y → Type ℓ) (base-case : motive x refl)
+    (p : x ≡ y) → motive y p
+J motive base-case p = transport (λ i → motive (p i) (λ j → p (i ∧ j))) base-case
 ```
 
 If we think of the dependent type `P` as a property, then the J rule
@@ -434,9 +444,12 @@ a path and not a definitional equality.
 transportRefl : (x : A) → transport refl x ≡ x
 transportRefl {A = A} x i = transp (λ _ → A) i x
 
-JRefl : (P : ∀ y → x ≡ y → Type ℓ) (r : P x refl)
-      → J P r refl ≡ r
-JRefl P r = transportRefl r
+substRefl : (P : A → Type ℓ) {x : A} (y : P x) → subst P refl y ≡ y
+substRefl P y = transportRefl y
+
+JRefl : (motive : ∀ y → x ≡ y → Type ℓ) (base-case : motive x refl)
+      → J motive base-case refl ≡ base-case
+JRefl motive base-case = transportRefl base-case
 ```
 
 This remarkable feature of paths will allow us to upgrade all of the
@@ -534,39 +547,54 @@ case.
     s zero zero tt = refl
     s (suc x) (suc y) p = s x y p
 
+    -- decodeℕ x y (encodeℕ x y p) ≡ p
+
     r : (x y : ℕ) → retract (encodeℕ x y) (decodeℕ x y)
-    r zero zero p = {! refl !}
-    r zero (suc y) p = {! decodeℕ zero (suc y) (encodeℕ zero (suc y) p)  !}
-    r (suc x) zero p = {!   !}
-    r (suc x) (suc y) p = {!   !}
+    r x y p = J motive base-case p 
+      where 
+        motive : {x : ℕ} (y : ℕ ) (p : x ≡ y) → Type
+        motive {x} y p = decodeℕ x y (encodeℕ x y p) ≡ p
+
+        base-case : {x : ℕ} → motive x refl
+        base-case {zero} = refl
+        base-case {suc x} i = cong suc (base-case i)
 ```
 
-Let's do the encode-decode method again, but for coproducts.
+-- Let's do the encode-decode method again, but for coproducts.
 ```
 -- Exercise
 -- Hint: For r, you need to use transitivity.
-≡Iso≡⊎ : {A B : Type} (x y : A ⊎ B) → Iso (x ≡ y) (x ≡⊎ y)
-≡Iso≡⊎ {A = A} {B = B} x y = iso (encode x y) (decode x y) (s x y) (r x y)
-  where
-    codeRefl : (c : A ⊎ B) → c ≡⊎ c
-    codeRefl c = {!!}
+-- ≡Iso≡⊎ : {A B : Type} (x y : A ⊎ B) → Iso (x ≡ y) (x ≡⊎ y)
+-- ≡Iso≡⊎ {A = A} {B = B} x y = iso (encode x y) (decode x y) (s x y) (r x y)
+--   where
+--     codeRefl : (c : A ⊎ B) → c ≡⊎ c
+--     codeRefl (inl a) = refl
+--     codeRefl (inr b) = refl
 
-    encode : (x y : A ⊎ B) → x ≡ y → x ≡⊎ y
-    encode x y p = {!!}
+--     encode : (x y : A ⊎ B) → x ≡ y → x ≡⊎ y
+--     encode (inl a) (inl a1) p = subst (λ u → (inl a ≡⊎ u)) p refl
+--     encode (inl a) (inr b) p = subst (λ u → (inl a ≡⊎ u)) p refl
+--     encode (inr b) (inl a) p = subst (λ u → (inr b ≡⊎ u )) p refl
+--     encode (inr b) (inr b1) p = subst (λ u → (inr b ≡⊎ u )) p refl
 
-    encodeRefl : (c : A ⊎ B)  → encode c c refl ≡ codeRefl c
-    encodeRefl c = {!!}
+--     encodeRefl : (c : A ⊎ B)  → encode c c refl ≡ codeRefl c
+--     encodeRefl c = substRefl (c ≡⊎_) (codeRefl c) 
 
-    decode : (x y : A ⊎ B) → x ≡⊎ y → x ≡ y
-    decode x y p = {!!}
+--     decode : (x y : A ⊎ B) → x ≡⊎ y → x ≡ y
+--     decode (inl a) (inl a₁) p = cong inl p
+--     decode (inr b) (inr b₁) p = cong inr p
 
-    -- decodeRefl : (c : A ⊎ B) → decode c c (codeRefl c) ≡ refl
-    -- decodeRefl c p = {!!}
+--     decodeRefl : (c : A ⊎ B) → decode c c (codeRefl c) ≡ refl
+--     decodeRefl (inl a) p = refl
+--     decodeRefl (inr b) p = refl
 
-    s : (x y : A ⊎ B) → section (encode x y) (decode x y)
-    s x y = {!!}
+--     s : (x y : A ⊎ B) → section (encode x y) (decode x y)
+--     s (inl a) (inl a') = J (λ a' p → encode (inl a) (inl a') (cong inl p) ≡ p)
+--                            (encodeRefl (inl a))
+--     s (inr b) (inr b') = J (λ b' p → encode (inr b) (inr b') (cong inr p) ≡ p)
+--                            (encodeRefl (inr b))
 
-    r : (x y : A ⊎ B) → retract (encode x y) (decode x y)
-    r x y = {!!}
+--     r : (x y : A ⊎ B) → retract (encode x y) (decode x y)
+--     r x y = J (λ y p → decode x y (encode x y p) ≡ p)
+--               ((trans ( cong (decode x x) (encodeRefl x))) (decodeRefl x)) 
 ```
-    

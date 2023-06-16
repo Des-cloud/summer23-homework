@@ -11,6 +11,7 @@ open import homework.1--Type-Theory.1-2--Inductive-Types
 open import homework.2--Paths-and-Identifications.2-1--Paths
 open import homework.2--Paths-and-Identifications.2-2--Path-Algebra-and-J
 
+
 private
   variable
     ℓ ℓ' ℓ'' : Level
@@ -78,11 +79,11 @@ complete the definition.
 
 Super Hint: It's exactly the connection square
              p
-         y - - - > y
+         x - - - > y
          ^         ^
     refl |         | p            ^
          |         |            j |
-         x — — — > y              ∙ — >
+         x — — — > x              ∙ — >
             refl                    i
 -}
 isContrSingl : (a : A) → isContr (singl a)
@@ -90,7 +91,7 @@ isContrSingl : (a : A) → isContr (singl a)
 isContrSingl a = (a , refl) , contract
   where
     contract : (y : singl a) → (a , refl) ≡ y
-    contract (x , p) = {!!}
+    contract (x , p) = λ i → ((p i) , λ j → p (i ∧ j))
 ```
 
 We show that our type `⊤`, which was defined to have only a single
@@ -99,7 +100,10 @@ element `tt : ⊤`, is contractible.
 ```
 isContr⊤ : isContr ⊤
 -- Exercise
-isContr⊤ = {!!}
+isContr⊤ = tt , contract
+  where
+    contract : (y : ⊤) → tt ≡ y
+    contract tt = refl
 ```
 
 Any two contractible types are isomorphic. As a corollary, any
@@ -109,8 +113,9 @@ contractible type is isomorphic to `⊤`.
 isContr→Iso : {A : Type ℓ} {B : Type ℓ'} → isContr A → isContr B → Iso A B
 -- Exercise
 -- isContr→Iso c c' = ?
-isContr→Iso c c' = {!!}
-
+isContr→Iso c c' = iso (λ _ → center c') (λ _ → center c) (contraction c') (contraction c)
+  
+    
 isContrIso⊤ : {A : Type}  → isContr A → Iso A ⊤
 isContrIso⊤ c = isContr→Iso c isContr⊤
 ```
@@ -121,7 +126,7 @@ then it is contractible.
 ```
 iso⊤IsContr : {A : Type ℓ} → Iso A ⊤ → isContr A
 -- Exercise
-iso⊤IsContr the-iso = {!!}
+iso⊤IsContr the-iso = g tt , λ y → trans (cong g ((snd isContr⊤ (f y)))) (r y)
   where
     f = Iso.fun the-iso
     g = Iso.inv the-iso
@@ -134,7 +139,7 @@ We can show that there is in fact a unique map from `∅` to any type.
 ```
 ∅-rec-unique : {A : Type ℓ} → isContr (∅ → A)
 -- ∅-rec-unique = ?
-∅-rec-unique = {!!}
+∅-rec-unique = ∅-rec , λ t → {!   !}
 ```
 
 
@@ -227,7 +232,7 @@ isContrSingl' : {A : Type} (a : A) → isContr (singl' a)
 isContrSingl' a = (a , refl) , contract
   where
     contract : (y : singl' a) → (a , refl) ≡ y
-    contract (x , p) i = {!!}
+    contract (x , p) i = p (~ i) , λ j → p ((~ i) ∨ j)
 
 idIsEquiv : (A : Type) → isEquiv (idfun A)
 idIsEquiv A = λ y → isContrSingl' y

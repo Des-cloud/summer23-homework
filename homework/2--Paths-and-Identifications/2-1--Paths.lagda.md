@@ -1,4 +1,5 @@
 # Homework 2-1: Paths and the Interval
+
 ```
 module homework.2--Paths-and-Identifications.2-1--Paths where
 
@@ -13,6 +14,7 @@ open import homework.1--Type-Theory.1-3--Propositions-as-Types
 Aside: This block lets us refer to some arbitrary types `A`, `B`, ... and
 terms `x : A`, `y : A`, ... without cluttering every definition with
 `{A : Type} {B : Type}`, and so on.
+
 ```
 private
   variable
@@ -24,15 +26,15 @@ private
 
 Topics covered:
 
-* Paths as maps from the interval
-  * The homotopical inspiration
-* Basic paths:
-  * Reflexivity
-  * Function application (cong)
-  * Paths in pair types
-  * Paths in function types ("function extensionality")
-* Substitution
-* Paths as Equalities
+- Paths as maps from the interval
+  - The homotopical inspiration
+- Basic paths:
+  - Reflexivity
+  - Function application (cong)
+  - Paths in pair types
+  - Paths in function types ("function extensionality")
+- Substitution
+- Paths as Equalities
 
 References:
 Cubical.Foundations.Prelude
@@ -50,7 +52,7 @@ would make proving general facts about equality difficult.
 
 To resolve this issue, Cubical Agda takes a page from homotopy theory
 --- the mathematical theory of continuous deformations of
-shapes. Classically, a *homotopy* is a continuous deformation of one
+shapes. Classically, a _homotopy_ is a continuous deformation of one
 object into another. In homotopy theory, we only care about the
 properties of objects which are unchanged by continuous deformation;
 in other words, for the purposes of homotopy theory, to give a
@@ -79,23 +81,22 @@ variables as a function of one variable landing in functions of one
 variable. Using this idea, we can see a homotopy $h$ between $f$ and
 $g$ as a function $h : [0, 1] → (X → Y)$ into the space of continuous
 functions $X → Y$ where $h(0) = f$ and $h(1) = g$. In other words, a
-homotopy is a *path* in function space, where a path is a continuous
+homotopy is a _path_ in function space, where a path is a continuous
 function out of the unit interval $[0, 1]$. In general, if objects $F$
 and $G$ are points of some space $S$, then a homotopy between $F$ and
 $G$ is a path $h : [0, 1] → S$ with $h(0) = F$ and $h(1) = G$, no
 matter what $F$ and $G$ are.
-
 
 ## Paths
 
 This is the idea we will borrow for type theory. We will axiomatize a
 special "type" `I` - meant to be our type theoretic version of the
 unit interval $[0, 1]$ - with two elements `i0 : I` and `i1 : I`
-(meant to be the endpoints $0$ and $1$). A *path* will then be a function
+(meant to be the endpoints $0$ and $1$). A _path_ will then be a function
 `h : I → S` into any type `S`. In general then, our notion of sameness
 `x ≡ y` for any two elements `x y : S` will be a function `h : I → S`
 with `h(i0) = x` and `h(i1) = y`. Crucially, these will be
-*definitional* equalities; Agda will check that values of the function
+_definitional_ equalities; Agda will check that values of the function
 on `i0` and `i1` match exactly with the ones specified.
 
 However, `I` is not like other types since we don't intend it to
@@ -117,6 +118,7 @@ _ = i1
 
 This prevents us from using all our usual type operations on `I`, which
 is good, since it isn't meant to be treated as a data type.
+
 ```
 -- Uncomment these and try them out!
 {-
@@ -139,9 +141,9 @@ _ = I → Bool
 
 Now we come to paths. Agda provides a built-in type `Path A x y` which
 is like a function `I → A`, but where the endpoints are known to be
-`x` and `y` *by definition*. That is, starting with `p : Path A x y`,
-evaluating `p i0` gives *exactly* `x`, and evaluating `p i1` gives
-*exactly* `y`. We will use the infix notation `x ≡ y` for `Path A x y`.
+`x` and `y` _by definition_. That is, starting with `p : Path A x y`,
+evaluating `p i0` gives _exactly_ `x`, and evaluating `p i1` gives
+_exactly_ `y`. We will use the infix notation `x ≡ y` for `Path A x y`.
 (To enter the ≡ symbol, write `\equiv`).
 
 We define paths just like we define functions: we assume we have an
@@ -159,6 +161,7 @@ same as `x` - certainly a good start!
 
 Even with such a basic principle, this is already enough to start
 proving some useful equalities.
+
 ```
 -- Exercise
 ∘-assoc : (h : C → D)
@@ -176,7 +179,8 @@ proving some useful equalities.
 ∘-idʳ f i x = f x
 ```
 
-We can even show that `Bool` has the structure of a *Boolean algebra*.
+We can even show that `Bool` has the structure of a _Boolean algebra_.
+
 ```
 notnot : ∀ x → not (not x) ≡ x
 notnot true = refl
@@ -227,12 +231,14 @@ the "Law of Excluded Middle": `b or (not b)`.)
 
 Types of paths are types like any other, so we can define functions
 that accept paths as arguments and produce paths as results.
+
 ```
 cong : (f : A → B)
   → (x ≡ y)
   → f x ≡ f y
 cong f p i = f (p i)
 ```
+
 This is the principle that says that doing the same thing to both
 sides of an equation gives an equal result - very useful!
 
@@ -272,7 +278,7 @@ endpoints.
 
 ≡-fst : {x y : A × B} → x ≡ y → (fst x ≡ fst y)
 -- Exercise:
-≡-fst p i = fst (p i) 
+≡-fst p i = fst (p i)
 
 ≡-snd : {x y : A × B} → x ≡ y → (snd x ≡ snd y)
 -- Exercise:
@@ -295,6 +301,7 @@ funExt⁻ : {f g : A → B}
 -- Exercise:
 funExt⁻ p x i = p i x
 ```
+
 This is the principle of "function extensionality": to say that `f`
 equals `g` means that for all `x`, `f x` equals `g x`.
 
@@ -311,7 +318,7 @@ The `≡` constructor has low precedence, so `f x ≡ f y` means `(f x) ≡
 
 ## Isomorphisms
 
-We have enough tools now to define an *isomorphism* between two
+We have enough tools now to define an _isomorphism_ between two
 types. "Isomorphism" is a faux-Greek word meaning "same shape" ---
 "iso-" and "morph". The idea of an isomorphism between two types is
 that these types contain equivalent data.
@@ -362,7 +369,7 @@ Iso-Bool-⊤⊎⊤ : Iso Bool (⊤ ⊎ ⊤)
 Iso-Bool-⊤⊎⊤ = iso Bool→⊤⊎⊤ ⊤⊎⊤→Bool s r
   where
     s : section Bool→⊤⊎⊤ ⊤⊎⊤→Bool
-    s (inl tt) = refl
+    s (inl tt) = λ i → inl tt
     s (inr tt) = refl
 
     r : retract Bool→⊤⊎⊤ ⊤⊎⊤→Bool
@@ -479,6 +486,7 @@ Cubical Agda axiomatizes this idea with a function called `transp`:
 `transp : ∀ (φ : I) (A : (i : I) → Type) (a : A i0) → A i1`
 
 The function transp is slightly more general than what we need (we'll see what role the φ plays later in Part 2). What we really need is this function called "transport":
+
 ```
 transport : {A B : Type ℓ} → A ≡ B → A → B
 transport p a = transp (λ i → p i) i0 a
@@ -515,12 +523,12 @@ family we are substituting in is therefore `(λ b → true ≡Bool b)`, and
 so we get that `subst (λ b → true ≡Bool b) p : true ≡Bool true → true ≡Bool false`.
 
 Give it a try in the reverse:
+
 ```
 false≢true : ¬ false ≡ true
 -- Exercise
 false≢true p = subst (λ b → false ≡Bool b) p tt
 ```
-
 
 Now we have all the tools necessary to show that paths in `Bool` are
 the same thing as the equalities we define in 1-3!
@@ -529,7 +537,7 @@ the same thing as the equalities we define in 1-3!
 ≡iff≡Bool : (a b : Bool) → (a ≡ b) iffP (a ≡Bool b)
 -- Exercise:
 -- (a ≡ b) -> (a ≡Bool b)
--- x 
+-- x
 -- (a ≡Bool b) -> (a ≡ b)
 
 ≡iff≡Bool a b = (to a b) , (fro a b)
@@ -553,6 +561,7 @@ can, but we will need some theory developed in the next lecture. If
 you're curious, give it a shot and see where you get stuck.
 
 We can do the same for the other equalities we covered in 1-3.
+
 ```
 -- Exercise
 -- to x y p = ?
@@ -592,7 +601,7 @@ inr b1 ≡⊎ inr b2 = b1 ≡ b2
 -- x=y -> x≡⊎y
 -- x≡⊎y -> x=y
 ≡iff≡⊎ x y = (to x y) , (fro x y)
-  where 
+  where
     to : (x y : A ⊎ B) → (x ≡ y) → (x ≡⊎ y)
     to (inl a) (inl a1) p = subst (λ t → inl a ≡⊎ t) p refl
     to (inl a) (inr b) p = subst (λ t → inl a ≡⊎ t) p refl

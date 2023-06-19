@@ -80,19 +80,19 @@ A function `f : A → B` may be thought of in two ways:
 Here is our first Agda function: the identity function of type `ℕ → ℕ`.
 
 ```
-idℕ : ℕ → ℕ
-idℕ x = x
+ℕidentityFunction : ℕ → ℕ
+ℕidentityFunction x = x
 ```
 
 Functions are defined by placing a fresh variable name to the left of
-the `=` sign, which can then be used on the right. So here, idℕ
+the `=` sign, which can then be used on the right. So here, identityFunction
 accepts `x` as input, and immediately produces `x` as output.
 
 Here is another way to define the identity function:
 
 ```
-idℕ' : ℕ → ℕ
-idℕ' = λ (x : ℕ) → x
+ℕidentityFunction' : ℕ → ℕ
+ℕidentityFunction' = λ (x : ℕ) → x
 ```
 
 The syntax `λ (x : A) → t` defines the function `A → B` which sends `x` to
@@ -116,8 +116,8 @@ name is also immortalized in the programming language
 Haskell). Consider the following two functions:
 
 ```
-constℕ : ℕ → ℕ → ℕ
-constℕ a b = a
+ℕconstFxn : ℕ → ℕ → ℕ
+ℕconstFxn a b = a
 
 constℕ' : ℕ → (ℕ → ℕ)
 constℕ' a = λ b → a
@@ -140,8 +140,8 @@ We can apply a function `f : A → B` to an argument `a : A` by writing
 `f a : B` --- note the lack of parentheses around `a`!
 
 ```
-applyℕ : (ℕ → ℕ) → ℕ → ℕ
-applyℕ f a = f a
+ℕapplyFunction : (ℕ → ℕ) → ℕ → ℕ
+ℕapplyFunction f a = f a
 ```
 
 Note that while we didn't need the parentheses around `(ℕ → ℕ)` in the
@@ -155,8 +155,8 @@ elements of the type `ℕ`. This is overly restrictive, we should have
 an identity function `A → A` that works for any type `A` at all.
 
 ```
-idE : (A : Type) → A → A
-idE A x = x
+identityFunction : (A : Type) → A → A
+identityFunction A x = x
 ```
 
 Let's understand why the type of `id` is a bit more complicated than
@@ -173,8 +173,8 @@ which is a type. When applied, `id A` gives back the identity function
 `const` and `apply` can be similarly generalised:
 
 ```
-constE : (A : Type) → (B : Type) → A → B → A
-constE A B a b = a
+constFunction : (A : Type) → (B : Type) → A → B → A
+constFunction A B a b = a
 
 -- The function constE : (A : Type) → (B : Type) → A → B → A takes four arguments: A, B, x, and y. 
 -- It specifies that A and B are type parameters, x is a value of type A, and y is a value of type B. 
@@ -188,8 +188,8 @@ constE A B a b = a
 ```
 
 ```
-applyE : (A : Type) → (B : Type) → (A → B) → A → B
-applyE A B f a = f a
+applyFunction : (A : Type) → (B : Type) → (A → B) → A → B
+applyFunction A B f a = f a
 
 -- The function applyE : (A : Type) → (B : Type) → (A → B) → A → B takes four arguments: A, B, f, and x. 
 -- It specifies that A and B are type parameters, f is a function that takes an argument of type A and returns a value of type B, and x is a value of type A. 
@@ -352,7 +352,7 @@ mvrnote: this is confusing I think
 
 ```
 Π : (A : Type) → (B : A → Type) → Type
-Π A B = (x : A) → B x
+Π A B = (x : A) → (B x)
 
 -- def dependent_function(A, B):
 --     # Here, A represents a type and B represents a type family
@@ -394,8 +394,8 @@ which is an element of `A × B`. The space before the comma is
 necessary, or Agda thinks you are referring to a variable called `a,`.
 
 ```
-pair× : {A : Type} → {B : Type} → A → B → (A × B)
-pair× a b = (a , b)
+tuple : {A : Type} → {B : Type} → A → B → (A × B)
+tuple a b = (a , b)
 
 -- def pair(a, b):
 --     return (a, b)
@@ -405,14 +405,14 @@ To use a pair, we can "project out" the first and second components
 using the in-built funtions `fst` and `snd`.
 
 ```
-my-fst× : {A : Type} → {B : Type} → (A × B) → A
-my-fst× p = fst p
+tuple[0] : {A : Type} → {B : Type} → (A × B) → A
+tuple[0] tuple = fst tuple
 
 -- def my_fst(p):
 --     return p[0]
 
-my-snd× : {A : Type} → {B : Type} → (A × B) → B
-my-snd× p = snd p
+tuple[1] : {A : Type} → {B : Type} → (A × B) → B
+tuple[1] tuple = snd tuple
 
 -- def my_snd(p):
 --     return p[1]
@@ -421,26 +421,26 @@ my-snd× p = snd p
 These can be chained together to work with nested pairs.
 
 ```
-triple× : {A B C : Type} → A → B → C → ((A × B) × C)
-triple× a b c = ((a , b) , c)
+tuple3Elements : {A B C : Type} → A → B → C → ((A × B) × C)
+tuple3Elements a b c = ((a , b) , c)
 
 -- def triple(a, b, c):
 --     return ((a, b), c)
 
-my-fst×× : {A B C : Type} → ((A × B) × C) → A
-my-fst×× t = fst (fst t)
+tuple3Elements[0][0] : {A B C : Type} → ((A × B) × C) → A
+tuple3Elements[0][0] t = fst (fst t)
 
 -- def my_fst(p):
 --     return p[0][0]
 
-my-snd×× : {A B C : Type} → ((A × B) × C) → B
-my-snd×× t = snd (fst t)
+tuple3Elements[0][1] : {A B C : Type} → ((A × B) × C) → B
+tuple3Elements[0][1] t = snd (fst t)
 
 -- def my_snd(p):
 --     return p[0][1]
 
-my-trd×× : {A B C : Type} → ((A × B) × C) → C
-my-trd×× t = snd t
+tuple3Elements[1] : {A B C : Type} → ((A × B) × C) → C
+tuple3Elements[1] t = snd t
 
 -- def my_trd(p):
 --     return p[1]
@@ -451,10 +451,10 @@ from earlier, going from a function with a single argument that is a
 pair, to a function that returns a function, and vice versa.
 
 ```
-curry× : {A B C : Type}
+curryingTuple : {A B C : Type}
   → ((A × B) → C)
   → (A → (B → C))
-curry× f a b = f (a , b)
+curryingTuple f = λ a b → f (a , b)
 
 -- def curry(f):
 --     def g(a):
@@ -463,10 +463,10 @@ curry× f a b = f (a , b)
 --         return h
 --     return g
 
-uncurry× : {A B C : Type}
+uncurrying : {A B C : Type}
   → (A → (B → C))
   → ((A × B) → C)
-uncurry× f p = f (fst p) (snd p)
+uncurrying f = λ tuple → f (tuple[0] tuple) (tuple[1] tuple)
 ```
 
 There is nothing special about functions of two arguments here, try

@@ -21,6 +21,7 @@ This is a file of extra practice problems. Most of them are about lists.
 ```
 
 Before we start, the list recursion principle has a special name: fold
+
 ```
 fold : {A B : Type}
      → (start : B)        -- the starting value
@@ -55,8 +56,8 @@ test-prod = prodℕ (1 :: 2 :: 3 :: 4 :: [])
 -- Write a function which filters a list according to a proposition:
 -- filter isEven [1, 2, 3, 4, 5, 6] should be [2, 4, 6]
 filter : {A : Type} → (A → Bool) → List A → List A
-filter p [] = [] 
-filter p (x :: L) = if (p x) then x :: filter p L  else filter p L 
+filter p [] = []
+filter p (x :: L) = if (p x) then x :: filter p L  else filter p L
 
 
 filter-test : List ℕ
@@ -109,6 +110,3 @@ sort-test : List ℕ
 -- This will only normalize if you do C-c C-n outside a hole
 sort-test = sort _≤_ (5 :: 3 :: 1 :: 2 :: 4 :: [])
 ```
-
-
-

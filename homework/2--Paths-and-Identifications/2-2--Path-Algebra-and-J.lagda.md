@@ -1,4 +1,5 @@
 # Homework 2-2: Path Algebra and J
+
 ```
 module homework.2--Paths-and-Identifications.2-2--Path-Algebra-and-J where
 
@@ -23,12 +24,12 @@ private
 
 Topics Covered:
 
-* Interval algebra (`~`, `∧`, `∨`)
-* PathP
-* Squares
-* Singletons and Contractibility
-* J
-* Paths in inductive types (`Bool`, `ℕ`, `A ⊎ B`)
+- Interval algebra (`~`, `∧`, `∨`)
+- PathP
+- Squares
+- Singletons and Contractibility
+- J
+- Paths in inductive types (`Bool`, `ℕ`, `A ⊎ B`)
 
 In the last lecture, we saw what could be done with paths using only
 the fact that they are functions `I → A` and using the principle of
@@ -94,7 +95,6 @@ associative. With the above definition, it is a bit difficult to prove
 (though possible). We will see a more efficient definition of
 composition of paths in 2-4.
 
-
 A path between paths is a path in type of paths, which is to say, a
 function `a : I → (I → A)`. We can therefore think of
 paths-between-paths as functions of two interval variables `i` and
@@ -123,6 +123,7 @@ a-0≡a-1 : {A : Type ℓ} {a00 a01 a10 a11 : A}
         → I → Type ℓ
 a-0≡a-1 a-0 a-1 i = a-0 i ≡ a-1 i
 ```
+
 Note that:
 
 `a-0≡a-1 a-0 a-1 i0 = (a00 ≡ a01)` and
@@ -132,7 +133,7 @@ We want to say that the square is somehow an element of this
 continuously varying path type.
 
 To say this, we need to take a detour into another important concept:
-paths *over* paths.
+paths _over_ paths.
 
 ## PathP
 
@@ -146,6 +147,7 @@ P(ath).
 path-over-path : (A : I → Type) (a : A i0) (b : A i1) → Type
 path-over-path A a b = PathP A a b
 ```
+
 As with paths, where `p : x ≡ y` is a function `I → A` with `p i0 = x`
 by and `p i1 = y` by definition, if we have `p : PathP A a b`, then
 `p i0 = a` and `p i1 = b` by definition. In fact, the type `x ≡ y` is
@@ -154,7 +156,7 @@ constant at the type `A`.
 
 We can now clear up a lingering question from the previous section. We
 calculated what paths in pair and function types should be, but only
-for *non-dependent* pairs and functions. It turns out `PathP` is
+for _non-dependent_ pairs and functions. It turns out `PathP` is
 exactly the missing ingredient for describing paths in these types.
 
 There are actually two places dependency could show up here. The first
@@ -199,7 +201,7 @@ module _ {A : I → Type ℓ} {B : (i : I) → A i → Type ℓ'}
 ```
 
 Now for dependent functions. Function extensionality can be extended
-to *dependent* function extensionality. Again, the definition is
+to _dependent_ function extensionality. Again, the definition is
 identical but the type improves:
 
 ```
@@ -225,6 +227,7 @@ Square : {A : Type ℓ} {a00 a01 a10 a11 : A}
        → Type ℓ
 Square a0- a1- a-0 a-1 = PathP (a-0≡a-1 a-0 a-1) a0- a1-
 ```
+
 Here's the picture again:
 
              a-1
@@ -265,28 +268,28 @@ definitionally.
 There are a few additional equalities which hold for `max` and `min`
 that Cubical Agda axiomatizes for `∧` and `∨` (again, definitionally):
 
-* Top and Bottom:
-  `i0 ∧ j = i0`   and  `i0 ∨ j = j`
-  `i1 ∧ j = j`    and  `i1 ∨ j = i1`
-* Idempotence:
-  `i ∧ i = i`     and   `i ∨ i = i`
-* Commutativity:
-  `i ∧ j = j ∧ i` and   `i ∨ j = j ∨ i`
-* Associativity:
-  `(i ∧ j) ∧ k = i ∧ (j ∧ k)`   and   `(i ∨ j) ∨ k = i ∨ (j ∨ k)`
-* Distributivity:
-  `i ∧ (j ∨ k) = (i ∧ j) ∨ (i ∧ k)`   and  `i ∨ (j ∧ k) = (i ∨ j) ∧ (i ∨ k)`
-* Symmetry:
+- Top and Bottom:
+  `i0 ∧ j = i0` and `i0 ∨ j = j`
+  `i1 ∧ j = j` and `i1 ∨ j = i1`
+- Idempotence:
+  `i ∧ i = i` and `i ∨ i = i`
+- Commutativity:
+  `i ∧ j = j ∧ i` and `i ∨ j = j ∨ i`
+- Associativity:
+  `(i ∧ j) ∧ k = i ∧ (j ∧ k)` and `(i ∨ j) ∨ k = i ∨ (j ∨ k)`
+- Distributivity:
+  `i ∧ (j ∨ k) = (i ∧ j) ∨ (i ∧ k)` and `i ∨ (j ∧ k) = (i ∨ j) ∧ (i ∨ k)`
+- Symmetry:
   `~ (~ i) = i`
-* The De Morgan Laws:
-  `~ (i ∧ j) = (~ i) ∨ (~ j)`   and   `~ (i ∨ j) = (~ i) ∧ (~ j)`
+- The De Morgan Laws:
+  `~ (i ∧ j) = (~ i) ∨ (~ j)` and `~ (i ∨ j) = (~ i) ∧ (~ j)`
 
 Pen-and-Paper Exercise: Convince yourself that all of these axioms are
 true for the actual unit interval $[0, 1]$ where `∨ = max`, `∧ = min`,
 and `~ i = 1 - i`.
 
-These laws make I into a *De Morgan algebra*. De Morgan was a British
-mathematician and contemporary of Boole (whose *Boolean algebra* we
+These laws make I into a _De Morgan algebra_. De Morgan was a British
+mathematician and contemporary of Boole (whose _Boolean algebra_ we
 have seen in the logical operations on the type `Bool`, which is named
 after him). De Morgan was the first to state the laws which have his
 name, coined the term "mathematical induction" and was the first to
@@ -305,6 +308,7 @@ build some more squares:
          |         |               j |
          x — — — > x                 ∙ — >
             refl                       i
+
 ```
 connection∧ : (p : x ≡ y) → Square refl p refl p
 connection∧ p i j = p ( i ∧ j)
@@ -317,11 +321,12 @@ connection∧ p i j = p ( i ∧ j)
        |         |               j |
        x — — — > y                 ∙ — >
            p                         i
+
 ```
 -- Square a0- a1- a-0 a-1 = PathP (a-0≡a-1 a-0 a-1) a0- a1-
 
 connection∨ : (p : x ≡ y) → Square p refl p refl
-connection∨ p i j = p (i ∨ j)
+connection∨ p i j = {! p () !}
 ```
 
 Below we have drawn some more squares. Write them down in Cubical Agda
@@ -339,15 +344,17 @@ below.
 connectionEx1 : (p : x ≡ y) → Square p refl refl (sym p)
 -- Exercise
 connectionEx1 p i j = p (j ∧ (~ i) )
--- ```
---             p
---         x - - - > y
---         ^         ^
---     p⁻¹ |         | refl            ^
---         |         |               j |
---         y — — — > y                 ∙ — >
---            refl                       i
--- ```
+```
+
+-- p
+-- x - - - > y
+-- ^ ^
+-- p⁻¹ | | refl ^
+-- | | j |
+-- y — — — > y ∙ — >
+-- refl i
+
+```
 connectionEx2 : (p : x ≡ y) → Square (sym p) refl refl p
 
 {-
@@ -405,7 +412,6 @@ isomorphic to the ones we had before.
     r (negsuc n) = refl
 ```
 
-
 ## The J Rule.
 
 Using the De Morgan structure on the interval, we can define a
@@ -426,11 +432,12 @@ induction principle: proving a property of all elements of a type by
 proving properties of something simpler.
 
 For comparison:
-* Induction for `Bool`: To prove `P b` for all `b : Bool`, it suffices
+
+- Induction for `Bool`: To prove `P b` for all `b : Bool`, it suffices
   to prove `B true` and `B false`.
-* Induction for `ℕ`: To prove `P n` for all `n : ℕ`, it suffices to
+- Induction for `ℕ`: To prove `P n` for all `n : ℕ`, it suffices to
   prove `P zero`, and `P (suc n)` assuming that `P n`.
-* Induction for paths: To prove `P y p` for all paths `p`, it suffices
+- Induction for paths: To prove `P y p` for all paths `p`, it suffices
   to prove `P x refl`.
 
 The induction principle for `Bool` includes a convenient computation
@@ -474,7 +481,7 @@ iff→Iso p s r = iso (fst p) (snd p) s r
       where
         motive : ∀ z q → Type
         motive z q = snd (≡iff≡Bool true z) (fst (≡iff≡Bool true z) q) ≡ q
-    
+
         base-case : motive true refl
         base-case = refl
 
@@ -484,7 +491,7 @@ iff→Iso p s r = iso (fst p) (snd p) s r
         motive z q = snd (≡iff≡Bool false z) (fst (≡iff≡Bool false z) q) ≡ q
 
         base-case : motive false refl
-        base-case = refl 
+        base-case = refl
 ```
 
 We similarly promote `≡iff≡ℕ` to an isomorphism, but it will be easier
@@ -550,8 +557,8 @@ case.
     -- decodeℕ x y (encodeℕ x y p) ≡ p
 
     r : (x y : ℕ) → retract (encodeℕ x y) (decodeℕ x y)
-    r x y p = J motive base-case p 
-      where 
+    r x y p = J motive base-case p
+      where
         motive : {x : ℕ} (y : ℕ ) (p : x ≡ y) → Type
         motive {x} y p = decodeℕ x y (encodeℕ x y p) ≡ p
 
@@ -561,6 +568,7 @@ case.
 ```
 
 -- Let's do the encode-decode method again, but for coproducts.
+
 ```
 -- Exercise
 -- Hint: For r, you need to use transitivity.
@@ -578,7 +586,7 @@ case.
 --     encode (inr b) (inr b1) p = subst (λ u → (inr b ≡⊎ u )) p refl
 
 --     encodeRefl : (c : A ⊎ B)  → encode c c refl ≡ codeRefl c
---     encodeRefl c = substRefl (c ≡⊎_) (codeRefl c) 
+--     encodeRefl c = substRefl (c ≡⊎_) (codeRefl c)
 
 --     decode : (x y : A ⊎ B) → x ≡⊎ y → x ≡ y
 --     decode (inl a) (inl a₁) p = cong inl p
@@ -596,5 +604,5 @@ case.
 
 --     r : (x y : A ⊎ B) → retract (encode x y) (decode x y)
 --     r x y = J (λ y p → decode x y (encode x y p) ≡ p)
---               ((trans ( cong (decode x x) (encodeRefl x))) (decodeRefl x)) 
+--               ((trans ( cong (decode x x) (encodeRefl x))) (decodeRefl x))
 ```

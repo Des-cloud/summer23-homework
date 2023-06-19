@@ -408,7 +408,7 @@ When `P` is already a proposition, truncating it should do nothing:
 ```
 isProp→equiv∃ : isProp P → Iso P (∃ P)
 -- Exercise
-isProp→equiv∃ isPropP = ?
+isProp→equiv∃ isPropP = {!   !}
 ```
 
 If `P : A → Type` is a family of propositions on `A` --- that is, a
